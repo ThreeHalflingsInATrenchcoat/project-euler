@@ -42,9 +42,8 @@ def is_this_a_product(prod):
     mult = max
     while(mult >= min and prod % mult != 0 and prod / mult <= max):
         mult -= 1
-    #print(prod, mult, min, max)
+
     if(prod % mult == 0):
-        print("Found it!: " + str(prod) + " = " + str(mult) + " * " + str(prod // mult))
         return True
     else:
         return False
