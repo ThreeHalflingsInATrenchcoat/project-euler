@@ -1,8 +1,6 @@
 import math
 
-primes = 10001
-
-#checks if number is prime, returns true or false
+#checks if number is prime, returns true or false, does not work for 1 or 2 because I already know that, and extra cycles
 def is_it_prime(x):
 
     sq = math.sqrt(x)
@@ -21,14 +19,12 @@ def is_it_prime(x):
     else:
         return False
 
-#print(is_it_prime(15))
+#not doing math on 2, i know it's prime
+sum = 2
 
-i = 2
-prime = 1
-
-while(prime < primes):
-    i += 1
+for i in range(3, 2000000, 2):
     if(is_it_prime(i)):
-        prime += 1
+        print(i)
+        sum += i
 
-print(i)
+print(sum)
