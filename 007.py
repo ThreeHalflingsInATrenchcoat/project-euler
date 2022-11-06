@@ -21,8 +21,6 @@ def is_it_prime(x):
     else:
         return False
 
-#print(is_it_prime(15))
-
 i = 2
 prime = 1
 
