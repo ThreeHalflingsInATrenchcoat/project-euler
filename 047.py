@@ -1,7 +1,6 @@
 # Find the first four consecutive integers to have four distinct prime factors each. What is the first of these numbers?
 # Total execution time was 91 seconds. This is not optimal.
 
-
 import tools.numbers as numbers
 import tools.timer as timer
 
