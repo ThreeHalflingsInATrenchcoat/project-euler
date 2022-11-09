@@ -75,29 +75,40 @@ def poker_hand_score(hand: str) -> tuple:
     hand = hand.replace('Q', '12')
     hand = hand.replace('K', '13')
     hand = hand.replace('A', '14')
-
-    print(hand)
-
+    
     hand = hand.split(' ')
 
-    print(hand)
 
+    # convert to tuples
     for card in range(5):
         hand[card] = (int(hand[card][:-1]), hand[card][-1])
 
-    print(hand)
-
+    # display hand for reference
     hand.sort()
-
     print(hand)
-#    high_card = max(hand, key=lambda x: x[0])
 
-#    return high_card
+    #high card
+    high_card = max(hand, key=lambda x: x[0])[0]
+    print(f'high card: {high_card}')
+
+    #multiples
+    numbers = {}
+    for card in hand:
+        numbers[card[0]] = numbers.setdefault(card[0], 0) + 1
+
+    max_set = max[]
+
+
+    
+
+
+
+
 
 
 with open('054_poker.txt', 'r', encoding='UTF-8') as hands:
     hand = hands.readline().rstrip()
-
+    hand = hands.readline().rstrip()
 p1_hand = hand[:14]
 p2_hand = hand[15:] 
 
