@@ -46,29 +46,32 @@
 # The file, poker.txt, contains one-thousand random hands dealt to two players. Each line of the file contains ten cards (separated by a single space): the first five are Player 1's cards and the last five are Player 2's cards. You can assume that all hands are valid (no invalid characters or repeated cards), each player's hand is in no specific order, and in each hand there is a clear winner.
 # How many hands does Player 1 win?
 
-from enum import Enum
-
-class HandValues(Enum):
-    high_card = 1
-    one_pair = 2
-    two_pairs = 3
-    three_of_a_kind = 4
-    straight = 5
-    flush = 6
-    full_house = 7
-    four_of_a_kind = 8
-    straight_flush = 9
+import math
 
 def poker_hand_score(hand: str) -> tuple:
-    """gives a tuple score for a poker hand (hand type, high card)
+    """gives an int score for a poker hand
     
     Args:
         hand: string formatted as "8C 2D TH AS 4D"
 
     Returns:
-        a tuple with a score for hand type follow by the high card value
+        a integer score for the hand as follows:
+        xx - straight flush, value of highest card, this covers royal flush
+        xx - four of a kind, value of cards
+        xx - full house, value of triple
+        x  - flush, just use a 1
+        x  - straight, just use a 1, the rest will be handled by card order
+        xx - three of a kind, value of triple
+        xx - value of higher pair if two pairs
+        xx - value of lower pair if two pairs, or only pair if one
+        xxxxxxxxxx - value of all cards in descending order
+
+        a royal flush would be written as
+        140000110000001413121110
+
+        high card would be written as
+        1311100802
     """
-    print(hand)
 
     hand = hand.replace('T', '10')
     hand = hand.replace('J', '11')
@@ -78,40 +81,108 @@ def poker_hand_score(hand: str) -> tuple:
     
     hand = hand.split(' ')
 
+    hand_score = ''
 
     # convert to tuples
     for card in range(5):
-        hand[card] = (int(hand[card][:-1]), hand[card][-1])
+        hand[card] = (f'{hand[card][:-1]:0>2}', hand[card][-1])
 
     # display hand for reference
-    hand.sort()
-    print(hand)
+    hand.sort(reverse=True)
 
-    #high card
-    high_card = max(hand, key=lambda x: x[0])[0]
-    print(f'high card: {high_card}')
+    #cards
+    for card in hand:
+        hand_score += card[0]
 
     #multiples
     numbers = {}
     for card in hand:
         numbers[card[0]] = numbers.setdefault(card[0], 0) + 1
 
-    max_set = max[]
+    pairs = [number for number, count in numbers.items() if count == 2]
+    triples = [number for number, count in numbers.items() if count == 3]
+    quads = [number for number, count in numbers.items() if count == 4]
 
-
+    #single or lower pair
+    if len(pairs) > 0:
+        hand_score = min(pairs) + hand_score
+    else:
+        hand_score = '00' + hand_score
     
+    #higher of two pairs
+    if len(pairs) == 2:
+        hand_score = max(pairs) + hand_score
+    else:
+        hand_score = '00' + hand_score
+    
+    #triples
+    if len(triples) == 1:
+        hand_score = triples[0] + hand_score
+    else:
+        hand_score = '00' + hand_score
 
+    #straight
+    straight = (len(numbers) == 5) and (int(min(numbers)) == int(max(numbers)) - 4)
+    if straight:
+        hand_score = max(numbers) + hand_score
+    else:
+        hand_score = '00' + hand_score
 
+    #flush
+    flush = all(card[1] == hand[0][1] for card in hand)
+    if flush:
+        hand_score = '1' + hand_score
+    else:
+        hand_score = '0' + hand_score
 
+    #full house
+    if len(triples) == 1 and len(pairs) == 1:
+        hand_score = triples[0] + hand_score
+    else:
+        hand_score = '00' + hand_score
+    
+    #quads
+    if len(quads) == 1:
+        hand_score = quads[0] + hand_score
+    else:
+        hand_score = '00' + hand_score
 
+    #straight flush
+    if straight and flush:
+        hand_score = max(numbers) + hand_score
+    # this will be lost when converting to int
+    # else:
+    #     hand_score = '00' + hand_score
+
+    return int(hand_score)
 
 
 with open('054_poker.txt', 'r', encoding='UTF-8') as hands:
-    hand = hands.readline().rstrip()
-    hand = hands.readline().rstrip()
-p1_hand = hand[:14]
-p2_hand = hand[15:] 
+    hand_number = 0
+    p1_wins = 0
+    p2_wins = 0
+    for hand in hands.readlines():
+        p1_hand = hand[:14]
+        p2_hand = hand[15:].rstrip()
 
-poker_hand_score(p1_hand)
-#p1_score = poker_hand_score(p1_hand)
-#print(p1_score)
+        p1_hand_score = poker_hand_score(p1_hand)
+        p2_hand_score = poker_hand_score(p2_hand)
+
+        print(f'{p1_hand}: {p1_hand_score:>20}')
+        print(f'{p2_hand}: {p2_hand_score:>20}')
+
+        hand_number += 1
+
+        if p1_hand_score > p2_hand_score:
+            p1_wins += 1
+            print(f'{hand_number}: P1 wins!')
+        elif p2_hand_score > p1_hand_score:
+            p2_wins += 1
+            print(f'{hand_number}: P2 wins!')
+        else:
+            print(f'{hand_number}: Tie! Nobody wins!')
+
+        print()
+
+print(f'P1: {p1_wins}')
+print(f'P2: {p2_wins}')
