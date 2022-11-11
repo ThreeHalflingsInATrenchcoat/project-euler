@@ -47,30 +47,33 @@
 # How many hands does Player 1 win?
 
 import math
+import tools.timer as timer
 
-def poker_hand_score(hand: str) -> tuple:
+def poker_hand_score(hand: str) -> int:
     """gives an int score for a poker hand
     
     Args:
         hand: string formatted as "8C 2D TH AS 4D"
 
     Returns:
-        a integer score for the hand as follows:
-        xx - straight flush, value of highest card, this covers royal flush
-        xx - four of a kind, value of cards
-        xx - full house, value of triple
-        x  - flush, just use a 1
-        x  - straight, just use a 1, the rest will be handled by card order
-        xx - three of a kind, value of triple
-        xx - value of higher pair if two pairs
-        xx - value of lower pair if two pairs, or only pair if one
-        xxxxxxxxxx - value of all cards in descending order
+        An integer score for the hand. Interpreting this number is not really important, just know that a higher int represents a better hand.
 
-        a royal flush would be written as
-        140000110000001413121110
+        Formatting:
+            xx - straight flush, value of highest card, this covers royal flush
+            xx - four of a kind, value of cards
+            xx - full house, value of triple
+            x  - flush, just use a 1
+            x  - straight, just use a 1, the rest will be handled by card order
+            xx - three of a kind, value of triple
+            xx - value of higher pair if two pairs
+            xx - value of lower pair if two pairs, or only pair if one
+            xxxxxxxxxx - value of all cards in descending order
 
-        high card would be written as
-        1311100802
+            a royal flush would be written as
+            140000110000001413121110
+
+            high card would be written as
+            1311100802
     """
 
     hand = hand.replace('T', '10')
@@ -91,7 +94,7 @@ def poker_hand_score(hand: str) -> tuple:
     hand.sort(reverse=True)
 
     #cards
-    for card in hand:
+    for card in sorted(hand, reverse=True):
         hand_score += card[0]
 
     #multiples
@@ -156,6 +159,8 @@ def poker_hand_score(hand: str) -> tuple:
 
     return int(hand_score)
 
+t = timer.Timer(verbose=True)
+t.start()
 
 with open('054_poker.txt', 'r', encoding='UTF-8') as hands:
     hand_number = 0
@@ -168,21 +173,24 @@ with open('054_poker.txt', 'r', encoding='UTF-8') as hands:
         p1_hand_score = poker_hand_score(p1_hand)
         p2_hand_score = poker_hand_score(p2_hand)
 
-        print(f'{p1_hand}: {p1_hand_score:>20}')
-        print(f'{p2_hand}: {p2_hand_score:>20}')
+        # print(f'{p1_hand}: {p1_hand_score:>20}')
+        # print(f'{p2_hand}: {p2_hand_score:>20}')
 
         hand_number += 1
 
         if p1_hand_score > p2_hand_score:
             p1_wins += 1
-            print(f'{hand_number}: P1 wins!')
+            # print(f'{hand_number}: P1 wins!')
         elif p2_hand_score > p1_hand_score:
             p2_wins += 1
-            print(f'{hand_number}: P2 wins!')
+            # print(f'{hand_number}: P2 wins!')
         else:
-            print(f'{hand_number}: Tie! Nobody wins!')
+            None
+            # print(f'{hand_number}: Tie! Nobody wins!')
 
-        print()
+        # print()
+
+t.stop()
 
 print(f'P1: {p1_wins}')
 print(f'P2: {p2_wins}')
